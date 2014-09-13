@@ -35,6 +35,7 @@ class Core extends ExternalModule
           `order_id` int(11) NOT NULL,
           `client_id` int(11) NOT NULL,
           `sum` float NOT NULL,
+          `currency` VARCHAR( 64 ) NOT NULL AFTER  `sum`,
           `status` tinyint(2) NOT NULL,
           `response` varchar(512) NOT NULL,
           `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
