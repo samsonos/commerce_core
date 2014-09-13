@@ -1,0 +1,20 @@
+{
+    "name":"samsonos/commerce_core",
+    "description": "SamsonPHP commerce core module",
+    "keywords": [ "commerce", "samsonos commerce"],
+    "authors":[
+        {
+            "name":"Vitaly Iegorov",
+            "email":"egorov@samsonos.com"
+        }
+    ],
+    "license":"Open Software License (OSL) v 3.0",
+    "homepage":"http://samsonphp.com/",
+    "autoload" : {
+        "classmap": ["src/"],
+        "psr-0": {
+            "samsonos\\commerce\\": "src/"
+        },
+        "files": ["src/global.php"]
+    }
+}
