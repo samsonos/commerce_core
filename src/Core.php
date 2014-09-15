@@ -21,6 +21,7 @@ class Core extends ExternalModule
         // Create order table SQL
         $orders = 'CREATE TABLE IF NOT EXISTS `order` (
           `order_id` int(11) NOT NULL AUTO_INCREMENT,
+          `company_id` int(11) NOT NULL,
           `client_id` int(11) NOT NULL,
           `sum` float NOT NULL,
           `status` int(11) NOT NULL,
@@ -32,6 +33,7 @@ class Core extends ExternalModule
         // Create payments table SQL
         $payment = 'CREATE TABLE IF NOT EXISTS `payment` (
           `payment_id` int(11) NOT NULL AUTO_INCREMENT,
+          `company_id` int(11) NOT NULL,
           `order_id` int(11) NOT NULL,
           `client_id` int(11) NOT NULL,
           `sum` float NOT NULL,
