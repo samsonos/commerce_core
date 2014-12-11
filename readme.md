@@ -1,24 +1,8 @@
-#SamsonPHP
+#ecommerce_core
 
-[SamsonPHP](http://samsonphp.com) - Modular Event-based PHP framework
-
-##Using SamsonPHP in your project
-To use SamsonPHP framework in your project you must add its dependency in your ```composer.json```:
-```
-    "minimum-stability":"dev",
-    "require": {
-        "samsonos/php_core": "*"
-    },
-```
-After doing ```composer install``` or ```composer update``` composer autoloader must be included
-into your init script(by default ```index.php```): ```require [PATH_TO_VENDOR_DIR]/autoload.php```.
-Following this line, all SamsonPHP classes and functions would be available.
-
-> We should use ```"minimum-stability":"dev"``` composer directive as we still cannot get
-> final release version of core module and other commonly used modules, but we promise to
-> do it near future
-
-##Loading modules into SamsonPHP framework
-All modules are loaded via composer.json file section ```require:...``` and follows all PSR-0 rules.
-
-Developed by [SamsonOS](http://samsonos.com/)
+[![Latest Stable Version](https://poser.pugx.org/samsonos/php_fs/v/stable.svg)](https://packagist.org/packages/samsonos/commerce_core)
+[![Build Status](https://travis-ci.org/samsonos/php_fs.png)](https://travis-ci.org/samsonos/commerce_core)
+[![Code Coverage](https://scrutinizer-ci.com/g/samsonos/php_fs/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/samsonos/commerce_core/?branch=master)
+[![Code Climate](https://codeclimate.com/github/samsonos/php_fs/badges/gpa.svg)](https://codeclimate.com/github/samsonos/commerce_core)
+[![Total Downloads](https://poser.pugx.org/samsonos/php_fs/downloads.svg)](https://packagist.org/packages/samsonos/commerce_core)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/samsonos/php_fs/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/samsonos/commerce_core/?branch=master)
