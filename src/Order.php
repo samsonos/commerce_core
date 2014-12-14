@@ -13,5 +13,10 @@
 class Order extends \samson\activerecord\order
 {
 
+ public function updateStatus($status, $comment='')
+ {
+
+ }
+
 }
  

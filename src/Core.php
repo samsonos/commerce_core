@@ -15,7 +15,7 @@
  */
 class Core extends CompressableService
 {
-    public $id = 'commerce_core';
+    public $id = 'commerce';
 
     /** Module connection handler */
     public function prepare()
