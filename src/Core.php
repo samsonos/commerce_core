@@ -21,35 +21,35 @@ class Core extends CompressableService
     public function prepare()
     {
         // Create order table SQL
-        $orders = 'CREATE TABLE IF NOT EXISTS `order` (
+        $sqlOrders = 'CREATE TABLE IF NOT EXISTS `order` (
           `OrderId` int(11) NOT NULL AUTO_INCREMENT,
           `CompanyId` int(11) NOT NULL,
           `ClientId` int(11) NOT NULL,
-          `sum` float NOT NULL,
-          `status` int(11) NOT NULL,
-          `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-          PRIMARY KEY (`order_id`),
-          KEY `client_id` (`client_id`)
+          `Total` float NOT NULL,
+          `Currency` VARCHAR( 64 ) NOT NULL,
+          `Status` int(11) NOT NULL,
+          `TS` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (`OrderId`),
+          KEY `ClientId` (`ClientId`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
 
         // Create payments table SQL
-        $payment = 'CREATE TABLE IF NOT EXISTS `payment` (
-          `payment_id` int(11) NOT NULL AUTO_INCREMENT,
-          `company_id` int(11) NOT NULL,
-          `order_id` int(11) NOT NULL,
-          `client_id` int(11) NOT NULL,
-          `sum` float NOT NULL,
-          `currency` VARCHAR( 64 ) NOT NULL AFTER  `sum`,
-          `status` tinyint(2) NOT NULL,
-          `response` varchar(512) NOT NULL,
-          `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-          PRIMARY KEY (`payment_id`),
-          KEY `client_id` (`client_id`),
-          KEY `order_id` (`order_id`)
+        $sqlPayment = 'CREATE TABLE IF NOT EXISTS `payment` (
+          `PaymentId` int(11) NOT NULL AUTO_INCREMENT,
+          `OrderId` int(11) NOT NULL,
+          `ClientID` int(11) NOT NULL,
+          `Amount` float NOT NULL,
+          `Currency` VARCHAR( 64 ) NOT NULL,
+          `Status` tinyint(2) NOT NULL,
+          `Response` varchar(512) NOT NULL,
+          `TS` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (`PaymentId`),
+          KEY `ClientID` (`ClientID`),
+          KEY `OrderId` (`OrderId`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
 
         // Create payments table SQL
-        $orderItem = 'CREATE TABLE IF NOT EXISTS `order_item` (
+        $sqlOrderItem = 'CREATE TABLE IF NOT EXISTS `order_item` (
           `OrderItemId` int(11) NOT NULL AUTO_INCREMENT,
           `OrderId` int(11) NOT NULL,
           `MaterialID` int(11) NOT NULL,
@@ -59,6 +59,10 @@ class Core extends CompressableService
           KEY `MaterialID` (`MaterialID`),
           KEY `OrderId` (`OrderId`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
+
+        db()->simple_query($sqlOrders);
+        db()->simple_query($sqlPayment);
+        db()->simple_query($sqlOrderItem);
 
 
         return parent::prepare();
