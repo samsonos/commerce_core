@@ -22,9 +22,9 @@ class Core extends CompressableService
     {
         // Create order table SQL
         $orders = 'CREATE TABLE IF NOT EXISTS `order` (
-          `order_id` int(11) NOT NULL AUTO_INCREMENT,
-          `company_id` int(11) NOT NULL,
-          `client_id` int(11) NOT NULL,
+          `OrderId` int(11) NOT NULL AUTO_INCREMENT,
+          `CompanyId` int(11) NOT NULL,
+          `ClientId` int(11) NOT NULL,
           `sum` float NOT NULL,
           `status` int(11) NOT NULL,
           `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -47,6 +47,19 @@ class Core extends CompressableService
           KEY `client_id` (`client_id`),
           KEY `order_id` (`order_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
+
+        // Create payments table SQL
+        $orderItem = 'CREATE TABLE IF NOT EXISTS `order_item` (
+          `OrderItemId` int(11) NOT NULL AUTO_INCREMENT,
+          `OrderId` int(11) NOT NULL,
+          `MaterialID` int(11) NOT NULL,
+          `Price` float NOT NULL,
+          `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (`OrderItemId`),
+          KEY `MaterialID` (`MaterialID`),
+          KEY `OrderId` (`OrderId`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
+
 
         return parent::prepare();
     }
