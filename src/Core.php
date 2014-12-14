@@ -33,19 +33,41 @@ class Core extends CompressableService
           KEY `ClientId` (`ClientId`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
 
+        // Create order table SQL
+        $sqlOrderLog = 'CREATE TABLE IF NOT EXISTS `order_log` (
+          `OrderLogId` int(11) NOT NULL AUTO_INCREMENT,
+          `OrderId` int(11) NOT NULL,
+          `UserId` int(11) NOT NULL,
+          `Status` int(11) NOT NULL,
+          `Comment` varchar(512) NOT NULL,
+          `TS` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (`OrderLogId`),
+          KEY `OrderId` (`OrderId`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
+
         // Create payments table SQL
         $sqlPayment = 'CREATE TABLE IF NOT EXISTS `payment` (
           `PaymentId` int(11) NOT NULL AUTO_INCREMENT,
           `OrderId` int(11) NOT NULL,
-          `ClientID` int(11) NOT NULL,
+          `Gate` varchar(50) NOT NULL,
           `Amount` float NOT NULL,
           `Currency` VARCHAR( 64 ) NOT NULL,
           `Status` tinyint(2) NOT NULL,
           `Response` varchar(512) NOT NULL,
           `TS` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`PaymentId`),
-          KEY `ClientID` (`ClientID`),
           KEY `OrderId` (`OrderId`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
+
+        // Create payments table SQL
+        $sqlPaymentLog = 'CREATE TABLE IF NOT EXISTS `payment_log` (
+          `PaymentLogId` int(11) NOT NULL AUTO_INCREMENT,
+          `PaymentID` int(11) NOT NULL,
+          `Status` tinyint(2) NOT NULL,
+          `Comment` varchar(512) NOT NULL,
+          `TS` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          PRIMARY KEY (`PaymentLogId`),
+          KEY `PaymentID` (`PaymentID`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
 
         // Create payments table SQL
@@ -63,6 +85,8 @@ class Core extends CompressableService
         db()->simple_query($sqlOrders);
         db()->simple_query($sqlPayment);
         db()->simple_query($sqlOrderItem);
+        db()->simple_query($sqlPaymentLog);
+        db()->simple_query($sqlOrderLog);
 
 
         return parent::prepare();
