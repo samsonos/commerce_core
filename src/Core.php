@@ -7,6 +7,7 @@
 
  use samson\core\CompressableService;
  use samson\core\Config;
+ use samson\core\Event;
 
  /**
  * Generics SamsonPHP commerce sytem core
@@ -17,12 +18,15 @@ class Core extends CompressableService
 {
     public $id = 'commerce';
 
+    private $gates = array();
+
     /** Module connection handler */
     public function prepare()
     {
         // Create order table SQL
         $sqlOrders = 'CREATE TABLE IF NOT EXISTS `order` (
           `OrderId` int(11) NOT NULL AUTO_INCREMENT,
+          `Key` VARCHAR( 32 ) NOT NULL,
           `CompanyId` int(11) NOT NULL,
           `ClientId` int(11) NOT NULL,
           `Total` float NOT NULL,
@@ -30,7 +34,8 @@ class Core extends CompressableService
           `Status` int(11) NOT NULL,
           `TS` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`OrderId`),
-          KEY `ClientId` (`ClientId`)
+          KEY `ClientId` (`ClientId`),
+          KEY `Key` (`Key`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;';
 
         // Create order table SQL
@@ -90,6 +95,27 @@ class Core extends CompressableService
 
 
         return parent::prepare();
+    }
+
+    public function init(array $params=array())
+    {
+        parent::init($params);
+
+        Event::subscribe('commerce.gateinited',array($this, 'addGate'));
+        Event::subscribe('commerce.update.status',array($this, 'updateStatus'));
+    }
+
+    public function addGate(& $gate)
+    {
+        $this->gates[$gate->id] = & $gate;
+    }
+
+    public function updateStatus($class, $objectId, $status, $comment)
+    {
+        $obj = new $class($objectId);
+        if (method_exists($obj, 'updateStatus')){
+            $obj->updateStatus($status, $comment);
+        }
     }
 }
  
