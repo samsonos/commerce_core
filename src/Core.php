@@ -18,6 +18,14 @@ class Core extends CompressableService
 {
     public $id = 'commerce';
 
+    public $sessionKay = '__samsonos_commerce_order_key';
+
+    public $productClass = 'samson/cms/CMSMaterial';
+
+    public $productCompanyField = 'CompanyId';
+
+    public $productPriceField = 'Price';
+
     private $gates = array();
 
     /** Module connection handler */
@@ -81,6 +89,7 @@ class Core extends CompressableService
           `OrderId` int(11) NOT NULL,
           `MaterialID` int(11) NOT NULL,
           `Price` float NOT NULL,
+          `Count` int(11) NOT NULL DEFAULT 0,
           `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`OrderItemId`),
           KEY `MaterialID` (`MaterialID`),
@@ -103,9 +112,10 @@ class Core extends CompressableService
 
         Event::subscribe('commerce.gateinited',array($this, 'addGate'));
         Event::subscribe('commerce.update.status',array($this, 'updateStatus'));
+        Event::subscribe('commerce.basketinited',array($this, 'initBasket'));
     }
 
-    public function addGate(& $gate)
+    public function addGate($gate)
     {
         $this->gates[$gate->id] = & $gate;
     }
@@ -117,5 +127,55 @@ class Core extends CompressableService
             $obj->updateStatus($status, $comment);
         }
     }
+
+    public function initBasket($basket)
+    {
+        $basket->core = $this;
+    }
+
+    public function createPayment(Order $order, $gate, $amount = null)
+    {
+        $payment = new Payment($order, $gate, $amount);
+        Event::fire('commerce.payment.created', array( & $payment));
+        return $payment;
+    }
+
+    public function addOrderItem($productId, $count = 1)
+    {
+        $product = null;
+        if (dbQuery($this->productClass)->id($productId)->first($product)) {
+            $order = null;
+            if(!isset($_SESSION[$this->sessionKay])) {
+                $order = new Order();
+                $order->CompanyId = $product[$this->productCompanyField];
+                $_SESSION[$this->sessionKay] = $order->Key;
+            } else {
+                $order = new Order($_SESSION[$this->sessionKay]);
+            }
+            if (isset($order)) {
+                $orderItem = null;
+                $orderItemQuery = dbQuery('samsonos/commerce/OrderItem')->ProductId($productId)->OrderId($order->id);
+                if (!$orderItemQuery->first($orderItem)) {
+                    $orderItem = new OrderItem(false);
+                    $orderItem->OrderId = $order->id;
+                    $orderItem->MaterialID = $productId;
+                }
+                $orderItem->Count += $count;
+                $orderItem->Price = $product[$this->productPriceField];
+                $orderItem->save();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function createForm($payment)
+    {
+        if (isset($this->gates[$payment->Gate])) {
+            return $this->gates[$payment->Gate]->createForm($payment);
+        }
+        return false;
+    }
+
 }
  

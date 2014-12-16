@@ -5,6 +5,8 @@
  */
 namespace samsonos\commerce;
 
+use samson\core\Event;
+
 /**
  * Generic Orders Item SamsonPHP commerce system class
  * @author Nikita Kotenko <kotenko@samsonos.com>

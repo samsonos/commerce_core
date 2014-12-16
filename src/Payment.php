@@ -5,6 +5,7 @@
  */
  namespace samsonos\commerce;
 
+ use samson\activerecord\order;
  use samson\core\Event;
 
  /**
@@ -20,6 +21,21 @@ class Payment extends \samson\activerecord\payment
     const STATUS_WAIT_SECURE = 114;
     const STATUS_SUCCESS = 111;
     const STATUS_FAIL = 112;
+
+    public function __construct( $order = null, $gate = '', $amount = null )
+    {
+        if (is_object($order)) {
+            if (get_class($order) === 'samsonos\commerce\Order') {
+                parent::__construct(false);
+                $this->OrderId = $order->id;
+                $this->Gate = $gate;
+                $this->Currency = $order->Currency;
+                $this->Amount = (isset($amount))?$amount:$order->Total;
+                $order = null;
+            }
+        }
+        parent::__construct($order);
+    }
 
     public function updateStatus($status, $comment = '')
     {
