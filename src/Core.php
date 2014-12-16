@@ -20,7 +20,7 @@ class Core extends CompressableService
 
     public $sessionKay = '__samsonos_commerce_order_key';
 
-    public $productClass = 'samson/cms/CMSMaterial';
+    public $productClass = '\samson\cms\CMSMaterial';
 
     public $productCompanyField = 'CompanyId';
 
@@ -87,7 +87,7 @@ class Core extends CompressableService
         $sqlOrderItem = 'CREATE TABLE IF NOT EXISTS `order_item` (
           `OrderItemId` int(11) NOT NULL AUTO_INCREMENT,
           `OrderId` int(11) NOT NULL,
-          `MaterialID` int(11) NOT NULL,
+          `MaterialId` int(11) NOT NULL,
           `Price` float NOT NULL,
           `Count` int(11) NOT NULL DEFAULT 0,
           `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -140,21 +140,22 @@ class Core extends CompressableService
         return $payment;
     }
 
-    public function addOrderItem($productId, $count = 1)
+    public function addOrderItem($productId, $currency = 'UAH', $count = 1)
     {
         $product = null;
         if (dbQuery($this->productClass)->id($productId)->first($product)) {
             $order = null;
-            if(!isset($_SESSION[$this->sessionKay])) {
+            if(!isset($_SESSION[$this->sessionKay][$product[$this->productCompanyField]])) {
                 $order = new Order();
                 $order->CompanyId = $product[$this->productCompanyField];
-                $_SESSION[$this->sessionKay] = $order->Key;
+                $order->Currency = $currency;
+                $_SESSION[$this->sessionKay][$product[$this->productCompanyField]] = $order->Key;
             } else {
-                $order = new Order($_SESSION[$this->sessionKay]);
+                $order = new Order($_SESSION[$this->sessionKay][$product[$this->productCompanyField]]);
             }
             if (isset($order)) {
                 $orderItem = null;
-                $orderItemQuery = dbQuery('samsonos/commerce/OrderItem')->ProductId($productId)->OrderId($order->id);
+                $orderItemQuery = dbQuery('\samsonos\commerce\OrderItem')->MaterialId($productId)->OrderId($order->id);
                 if (!$orderItemQuery->first($orderItem)) {
                     $orderItem = new OrderItem(false);
                     $orderItem->OrderId = $order->id;
@@ -163,7 +164,7 @@ class Core extends CompressableService
                 $orderItem->Count += $count;
                 $orderItem->Price = $product[$this->productPriceField];
                 $orderItem->save();
-                return true;
+                return $order;
             }
         }
         return false;
@@ -175,6 +176,11 @@ class Core extends CompressableService
             return $this->gates[$payment->Gate]->createForm($payment);
         }
         return false;
+    }
+
+    public  function emptyCart()
+    {
+        $_SESSION[$this->sessionKay] = array();
     }
 
 }

@@ -5,7 +5,6 @@
  */
  namespace samsonos\commerce;
 
- use samson\activerecord\order;
  use samson\core\Event;
 
  /**
