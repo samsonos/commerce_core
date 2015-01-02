@@ -151,7 +151,7 @@ class Core extends CompressableService
                 $order->Currency = $currency;
                 $_SESSION[$this->sessionKay][$product[$this->productCompanyField]] = $order->Key;
             } else {
-                $order = new Order($_SESSION[$this->sessionKay][$product[$this->productCompanyField]]);
+	            Order::byURL($_SESSION[$this->sessionKay][$product[$this->productCompanyField]], $order);
             }
             if (isset($order)) {
                 $orderItem = null;
