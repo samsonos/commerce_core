@@ -5,6 +5,7 @@
  */
  namespace samsonos\commerce;
 
+ use samson\activerecord\TableRelation;
  use samson\core\CompressableService;
  use samson\core\Config;
  use samson\core\Event;
@@ -25,6 +26,8 @@ class Core extends CompressableService
     public $productCompanyField = 'CompanyId';
 
     public $productPriceField = 'Price';
+
+	public $defaultCurrency = 'UAH';
 
     private $gates = array();
 
@@ -102,6 +105,7 @@ class Core extends CompressableService
         db()->simple_query($sqlPaymentLog);
         db()->simple_query($sqlOrderLog);
 
+	    new TableRelation('order', 'order_item', 'OrderId', TableRelation::T_ONE_TO_MANY);
 
         return parent::prepare();
     }
@@ -112,7 +116,7 @@ class Core extends CompressableService
 
         Event::subscribe('commerce.gateinited',array($this, 'addGate'));
         Event::subscribe('commerce.update.status',array($this, 'updateStatus'));
-        Event::subscribe('commerce.basketinited',array($this, 'initBasket'));
+        Event::subscribe('commerce.init.module.commerce.core',array($this, 'initCommerceCore'));
     }
 
     public function addGate($gate)
@@ -128,9 +132,9 @@ class Core extends CompressableService
         }
     }
 
-    public function initBasket($basket)
+    public function initCommerceCore($module)
     {
-        $basket->core = $this;
+	    $module->commerceCore = & $this;
     }
 
     public function createPayment(Order $order, $gate, $amount = null)
@@ -140,15 +144,15 @@ class Core extends CompressableService
         return $payment;
     }
 
-    public function addOrderItem($productId, $currency = 'UAH', $count = 1)
+    public function addOrderItem($productId, $count = 1)
     {
         $product = null;
         if (dbQuery($this->productClass)->id($productId)->first($product)) {
             $order = null;
-            if(!isset($_SESSION[$this->sessionKay][$product[$this->productCompanyField]])) {
+            if (!isset($_SESSION[$this->sessionKay][$product[$this->productCompanyField]])) {
                 $order = new Order();
+	            $order->Currency = $this->defaultCurrency;
                 $order->CompanyId = $product[$this->productCompanyField];
-                $order->Currency = $currency;
                 $_SESSION[$this->sessionKay][$product[$this->productCompanyField]] = $order->Key;
             } else {
 	            Order::byURL($_SESSION[$this->sessionKay][$product[$this->productCompanyField]], $order);
@@ -178,10 +182,36 @@ class Core extends CompressableService
         return false;
     }
 
-    public  function emptyCart()
+    public  function clearOrders()
     {
         $_SESSION[$this->sessionKay] = array();
     }
+
+	public function ordersList()
+	{
+		$orders = array();
+		if (isset($_SESSION[$this->sessionKay]) && sizeof($_SESSION[$this->sessionKay])) {
+			if (dbQuery('\samsonos\commerce\Order')->Key($_SESSION[$this->sessionKay])->join('order_item', '\samsonos\commerce\OrderItem')->exec($orders)) {
+				foreach ($orders as & $order) {
+					if (isset($order['onetomany']['_order_item'])) {
+						$order->items = $order['onetomany']['_order_item'];
+						unset($order['onetomany']['_order_item']);
+						$productIdList = array();
+						foreach($order->items as $item) {
+							$productIdList[] = $item->MaterialId;
+						}
+						$productList = array();
+						if (dbQuery($this->productClass)->id($productIdList)->exec($productList)) {
+							foreach($order->items as & $item) {
+								$item->Product = $productList[$item->MaterialId];
+							}
+						}
+					}
+				}
+			}
+		}
+		return $orders;
+	}
 
 }
  
