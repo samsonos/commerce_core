@@ -92,7 +92,7 @@ class Core extends CompressableService
           `OrderId` int(11) NOT NULL,
           `MaterialId` int(11) NOT NULL,
           `Price` float NOT NULL,
-          `Count` int(11) NOT NULL DEFAULT 0,
+          `Quantity` int(11) NOT NULL DEFAULT 0,
           `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`OrderItemId`),
           KEY `MaterialID` (`MaterialID`),
@@ -163,9 +163,9 @@ class Core extends CompressableService
                 if (!$orderItemQuery->first($orderItem)) {
                     $orderItem = new OrderItem(false);
                     $orderItem->OrderId = $order->id;
-                    $orderItem->MaterialID = $productId;
+                    $orderItem->MaterialId = $productId;
                 }
-                $orderItem->Count += $count;
+                $orderItem->Quantity += $count;
                 $orderItem->Price = $product[$this->productPriceField];
                 $orderItem->save();
                 return $order;
@@ -195,7 +195,6 @@ class Core extends CompressableService
 				foreach ($orders as & $order) {
 					if (isset($order['onetomany']['_order_item'])) {
 						$order->items = $order['onetomany']['_order_item'];
-						unset($order['onetomany']['_order_item']);
 						$productIdList = array();
 						foreach($order->items as $item) {
 							$productIdList[] = $item->MaterialId;
