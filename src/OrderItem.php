@@ -5,7 +5,7 @@
  */
 namespace samsonos\commerce;
 
-use samson\core\Event;
+use samsonphp\event\Event;
 
 /**
  * Generic Orders Item SamsonPHP commerce system class

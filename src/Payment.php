@@ -5,7 +5,7 @@
  */
  namespace samsonos\commerce;
 
- use samson\core\Event;
+ use samsonphp\event\Event;
 
  /**
  * Generic Paymet SamsonPHP commerce system class
@@ -24,11 +24,12 @@ class Payment extends \samson\activerecord\payment
     public function __construct( $order = null, $gate = '', $amount = null )
     {
         if (is_object($order)) {
-            if (get_class($order) === 'samsonos\commerce\Order') {
+            if (get_class($order) !== get_called_class()) {
                 parent::__construct(false);
                 $this->OrderId = $order->id;
                 $this->Gate = $gate;
                 $this->Currency = $order->Currency;
+	            $this->OrderClass = get_class($order);
                 $this->Amount = (isset($amount))?$amount:$order->Total;
                 $order = null;
             }
@@ -47,9 +48,9 @@ class Payment extends \samson\activerecord\payment
 
         $order = null;
         if ($status == self::STATUS_SUCCESS) {
-            Event::fire('commerce.update.status', array('Order', $this->OrderID, $status, $comment));
+            Event::fire('commerce.update.status', array($this->OrderClass, $this->OrderID, $status, $comment));
         } elseif($status == self::STATUS_FAIL) {
-            Event::fire('commerce.update.status', array('Order', $this->OrderID, $status, $comment));
+            Event::fire('commerce.update.status', array($this->OrderClass, $this->OrderID, $status, $comment));
         }
     }
 }

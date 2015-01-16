@@ -8,7 +8,7 @@
  use samson\activerecord\TableRelation;
  use samson\core\CompressableService;
  use samson\core\Config;
- use samson\core\Event;
+ use samsonphp\event\Event;
 
  /**
  * Generics SamsonPHP commerce sytem core
@@ -65,11 +65,16 @@ class Core extends CompressableService
         $sqlPayment = 'CREATE TABLE IF NOT EXISTS `payment` (
           `PaymentId` int(11) NOT NULL AUTO_INCREMENT,
           `OrderId` int(11) NOT NULL,
-          `Gate` varchar(50) NOT NULL,
+          `OrderClass` VARCHAR (100),
+          `Gate` varchar(20) NOT NULL,
+          `GateCode` varchar(20) NOT NULL,
           `Amount` float NOT NULL,
           `Currency` VARCHAR( 64 ) NOT NULL,
           `Status` tinyint(2) NOT NULL,
+          `Phone` varchar(32),
           `Response` varchar(512) NOT NULL,
+          `Description` varchar(512),
+          `Created` DATETIME,
           `TS` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`PaymentId`),
           KEY `OrderId` (`OrderId`)
@@ -126,10 +131,12 @@ class Core extends CompressableService
 
     public function updateStatus($class, $objectId, $status, $comment)
     {
-        $obj = new $class($objectId);
-        if (method_exists($obj, 'updateStatus')){
-            $obj->updateStatus($status, $comment);
-        }
+	    if (class_exists($class)) {
+		    $obj = new $class($objectId);
+		    if (method_exists($obj, 'updateStatus')){
+			    $obj->updateStatus($status, $comment);
+		    }
+	    }
     }
 
     public function initCommerceCore($module)
@@ -137,7 +144,7 @@ class Core extends CompressableService
 	    $module->commerceCore = & $this;
     }
 
-    public function createPayment(Order $order, $gate, $amount = null)
+    public function createPayment($order, $gate, $amount = null)
     {
         $payment = new Payment($order, $gate, $amount);
         Event::fire('commerce.payment.created', array( & $payment));
