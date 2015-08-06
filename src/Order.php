@@ -12,8 +12,19 @@
  */
 class Order extends \samson\activerecord\order
 {
+    /** const for fully pay product */
+    const TYPE_FULLY_PAY = 0;
+
+    /** const for book product */
+    const TYPE_BOOK_PAY = 1;
+
+    /**
+     * @param null $id
+     * @param null $class_name
+     */
     public function __construct( $id = NULL, $class_name = NULL )
     {
+        //Set random Key
         if ($id !== false){
             if( ! isset( $id ) ) {
                 $this->Key = md5(time().rand(999999, 9999999));
@@ -25,12 +36,12 @@ class Order extends \samson\activerecord\order
 	/**
 	 * Get order by Key
 	 *
-	 * @param string    $key    Order Key
-	 * @param Order      $order   Pointer where found order object will be returned
+	 * @param string $key Order Key
+	 * @param Order  $order Pointer where found order object will be returned
 	 *
 	 * @return bool True if tour order found
 	 */
-	public static function byURL($key, & $order = null)
+	public static function byKey($key, & $order = null)
 	{
 		// Perform DB request
 		if (isset($key{0}) && dbQuery(get_called_class())->cond('Key', $key)->first($order)) {
@@ -39,10 +50,5 @@ class Order extends \samson\activerecord\order
 
 		return false;
 	}
-
-    public function updateStatus($status, $comment='')
-    {
-
-    }
 }
  
