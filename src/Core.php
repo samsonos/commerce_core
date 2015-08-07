@@ -39,67 +39,11 @@ class Core extends CompressableService
     private $gates = array();
 
     /**
-     * Setter
-     * @param $value
-     */
-    public function setCurrency($value){
-        $this->defaultCurrency = $value;
-    }
-
-    /**
      * Getter
      * @return string
      */
     public function getCurrency(){
         return $this->defaultCurrency;
-    }
-
-    /**
-     * Setter
-     * @param $value
-     */
-    public function setProductClass($value){
-        $this->productClass = $value;
-    }
-
-    /**
-     * Getter
-     * @return string
-     */
-    public function getProductClass(){
-        return $this->productClass;
-    }
-
-    /**
-     * Setter
-     * @param $value
-     */
-    public function setProductPriceField($value){
-        $this->productPriceField = $value;
-    }
-
-    /**
-     * Getter
-     * @return string
-     */
-    public function getProductPriceField(){
-        return $this->productPriceField;
-    }
-
-    /**
-     * Setter
-     * @param $value
-     */
-    public function setProductCompanyField($value){
-        $this->productCompanyField = $value;
-    }
-
-    /**
-     * Getter
-     * @return string
-     */
-    public function getProductCompanyField(){
-        return $this->productCompanyField;
     }
 
     /**
