@@ -22,9 +22,9 @@ class Payment extends \samson\activerecord\payment
     const STATUS_TEST_SUCCESSFUL = 115;
 
     /**
-     * @param null $order Order
+     * @param Order $order Order object
      * @param string $gate is the name of gate which uses
-     * @param null $amount
+     * @param float $amount Order grand total
      */
     public function __construct($order = null, $gate = '', $amount = null)
     {
