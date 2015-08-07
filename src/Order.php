@@ -36,7 +36,7 @@ class Order extends \samson\activerecord\order
 	public static function byKey($key, & $order = null)
 	{
 		// Perform DB request
-		if (isset($key{0}) && dbQuery(get_called_class())->cond('Key', $key)->first($order)) {
+		if (isset($key{0}) && $this->database->className(get_called_class())->cond('Key', $key)->first($order)) {
 			return true;
 		}
 
