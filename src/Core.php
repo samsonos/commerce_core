@@ -216,7 +216,7 @@ class Core extends CompressableService
      * Save new gate in object
      * @param $gate
      */
-    public function addGate($gate)
+    public function addGate(&$gate)
     {
         $this->gates[$gate->id] = & $gate;
     }
