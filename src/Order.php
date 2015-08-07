@@ -17,20 +17,12 @@ class Order extends \samson\activerecord\order
 
     /** const for book product */
     const TYPE_BOOK_PAY = 1;
-
-    /**
-     * @param null $id
-     * @param null $class_name
-     */
-    public function __construct( $id = NULL, $class_name = NULL )
+    
+    /** @inheritdoc */
+    public function filled()
     {
-        //Set random Key
-        if ($id !== false){
-            if( ! isset( $id ) ) {
-                $this->Key = md5(time().rand(999999, 9999999));
-            }
-        }
-        parent::__construct($id, $class_name);
+    	// Generate randomized order key
+    	$this->Key = md5(time().rand(999999, 9999999));
     }
 
 	/**
@@ -39,7 +31,7 @@ class Order extends \samson\activerecord\order
 	 * @param string $key Order Key
 	 * @param Order  $order Pointer where found order object will be returned
 	 *
-	 * @return bool True if tour order found
+	 * @return bool True if order found
 	 */
 	public static function byKey($key, & $order = null)
 	{
