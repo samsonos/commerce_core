@@ -20,36 +20,34 @@ class Core extends CompressableService
     /** @var string module name */
     public $id = 'commerce';
 
-    /** @var string session key uses for access to particular session name space */
-    protected $sessionKey = '__samsonos_commerce_order_key';
+    /** @var string Session key uses for access to particular session name space */
+    public $sessionKey = '__samsonos_commerce_order_key';
 
-    /** @var string is the main product class */
-    protected $productClass = '\samson\cms\CMSMaterial';
+    /** @var string Order product class name */
+    public $productClass = '\samson\cms\CMSMaterial';
 
-    /** @var string name company field in order */
-    protected $productCompanyField = 'CompanyId';
+    /** @var string Сompany identifier field name in order */
+    public $productCompanyField = 'CompanyId';
 
-    /** @var string name price field in order */
-    protected $productPriceField = 'Price';
+    /** @var string Price field name in order */
+    public $productPriceField = 'Price';
 
-    /** @var string default currency */
-	protected $defaultCurrency = 'UAH';
+    /** @var string Default currency */
+    public $defaultCurrency = 'UAH';
 
-    /** @var array store all gates which use for payment */
-    private $gates = array();
+    /** @var array Collection of loaded payment gates */
+    protected $gates = array();
 
     /**
      * Setter
      * @param $value
+     * @deprecated
      */
     public function setCurrency($value){
         $this->defaultCurrency = $value;
     }
 
-    /**
-     * Getter
-     * @return string
-     */
+    /** @return string Order currency */
     public function getCurrency(){
         return $this->defaultCurrency;
     }
@@ -57,6 +55,7 @@ class Core extends CompressableService
     /**
      * Setter
      * @param $value
+     * @deprecated
      */
     public function setProductClass($value){
         $this->productClass = $value;
@@ -65,6 +64,7 @@ class Core extends CompressableService
     /**
      * Getter
      * @return string
+     * @deprecated
      */
     public function getProductClass(){
         return $this->productClass;
@@ -73,6 +73,7 @@ class Core extends CompressableService
     /**
      * Setter
      * @param $value
+     * @deprecated
      */
     public function setProductPriceField($value){
         $this->productPriceField = $value;
@@ -81,6 +82,7 @@ class Core extends CompressableService
     /**
      * Getter
      * @return string
+     * @deprecated
      */
     public function getProductPriceField(){
         return $this->productPriceField;
@@ -89,6 +91,7 @@ class Core extends CompressableService
     /**
      * Setter
      * @param $value
+     * @deprecated
      */
     public function setProductCompanyField($value){
         $this->productCompanyField = $value;
@@ -97,6 +100,7 @@ class Core extends CompressableService
     /**
      * Getter
      * @return string
+     * @deprecated
      */
     public function getProductCompanyField(){
         return $this->productCompanyField;
@@ -186,8 +190,8 @@ class Core extends CompressableService
         db()->simple_query($sqlPaymentLog);
         db()->simple_query($sqlOrderLog);
 
-        //Create table relations
-	    new TableRelation('order', 'order_item', 'OrderId', TableRelation::T_ONE_TO_MANY);
+        // Create table relations
+	new TableRelation('order', 'order_item', 'OrderId', TableRelation::T_ONE_TO_MANY);
 
         return parent::prepare();
     }
@@ -198,17 +202,14 @@ class Core extends CompressableService
      */
     public function init(array $params=array())
     {
-
-        //Call parent handler
+    	// Call parent handler
         parent::init($params);
 
-        $this->prepare();
-
-        //Subscribe on event for catch when some gate will be init
+        // Subscribe to payment gate init event
         Event::subscribe('commerce.gateinited',array($this, 'addGate'));
 
-        //Subscribe on event for catch when need init commerce core
-        Event::subscribe('commerce.init.module.commerce.core',array($this, 'initCommerceCore'));
+        // Subscribe to commerce core initialization
+        Event::subscribe('commerce.init.module.commerce.core', array($this, 'initCommerceCore'));
     }
 
     /**
