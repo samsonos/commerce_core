@@ -38,72 +38,9 @@ class Core extends CompressableService
     /** @var array Collection of loaded payment gates */
     protected $gates = array();
 
-    /**
-     * Setter
-     * @param $value
-     * @deprecated
-     */
-    public function setCurrency($value){
-        $this->defaultCurrency = $value;
-    }
-
     /** @return string Order currency */
     public function getCurrency(){
         return $this->defaultCurrency;
-    }
-
-    /**
-     * Setter
-     * @param $value
-     * @deprecated
-     */
-    public function setProductClass($value){
-        $this->productClass = $value;
-    }
-
-    /**
-     * Getter
-     * @return string
-     * @deprecated
-     */
-    public function getProductClass(){
-        return $this->productClass;
-    }
-
-    /**
-     * Setter
-     * @param $value
-     * @deprecated
-     */
-    public function setProductPriceField($value){
-        $this->productPriceField = $value;
-    }
-
-    /**
-     * Getter
-     * @return string
-     * @deprecated
-     */
-    public function getProductPriceField(){
-        return $this->productPriceField;
-    }
-
-    /**
-     * Setter
-     * @param $value
-     * @deprecated
-     */
-    public function setProductCompanyField($value){
-        $this->productCompanyField = $value;
-    }
-
-    /**
-     * Getter
-     * @return string
-     * @deprecated
-     */
-    public function getProductCompanyField(){
-        return $this->productCompanyField;
     }
 
     /**
